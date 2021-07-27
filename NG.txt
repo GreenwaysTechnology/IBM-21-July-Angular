@@ -1,0 +1,327 @@
+                                         Angular 
+...............................................................................................
+DOM:
+....
+Component:
+
+ -Component is object,UI Object.
+ -Component is core object without which no ui
+ -Component uses other objects-directives,services,pipes,so....
+
+At core,At very low level- 
+  Component is simple javascript function.
+  
+  function has logic to create "DOM ELEMENT/DOM MANIUPLATION"
+
+DOM: 
+   DOM is spec , defined by W3C to reprenent html elements inside javascript engine.
+
+
+HTML;
+  HTML is programming language -  dsl pl /declarative pl.
+
+HTML internal work flow:
+........................
+
+index.html -source code
+
+<html>
+<head></head>
+<title><title>
+<body>
+  <div>
+     <h1>Welcome</h1>
+  </div>
+</body>
+</html>
+
+feed into-------------------Browser
+
+loader---LOAD Code into browser
+ |
+   from file: or http:
+ |
+Parser : Parser is special compiler which converts source into lexcial tree(string tree)
+ |
+body
+  div
+     h1
+        Welcome 
+     h1
+  div
+body
+|
+ Complier-Compilation : Convert this into assembly
+.........................................................................................
+|
+body -load xxx
+  div
+     h1
+        Welcome 
+     h1
+  div
+body
+
+|
+-------------------------Execution cycle------------------------------------
+HTML Execution engine : Request Os ,to allocate memory :Runtime
+
+-LinkedList
+
+body -Node
+  div -Node
+     h1 -Node
+        Welcome -Node
+     h1
+  div
+body
+| 
+ Linking the Nodes: Tree
+body  -Node
+  |
+  div -Node
+    |
+     h1 -Node
+      |
+        Welcome -Node
+        |
+     h1
+  div
+ |
+ |
+  Layout/Paint Engine: will convert nodes into pxs : final output
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Birth of Javascript:
+...................
+
+At Netscap decided to modifiy the linked list / tree via special program 
+
+netscap decided to create very light weight programming language to access the tree and modify the tree at runtime - js
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+class OrderComponent {}
+
+
+let cmp = new OrderComponent() ; In angular we dont need to create OrderComponent Object
+Angular creates on behalf of us  - Dependency Injection System.
+
+...........................................................................................
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+					HTML Elements types
+
+1.built in elements
+
+2.custom elements
+
+
+1.built in elements
+  are part of html language spec
+ h1,body,p,nav,div,script,li,img.......
+
+
+int a =10; - compiler---compile---assembly code
+
+Int a =10; -compiler --|
+
+compiler design
+
+ source code
+                              compiler db -[div]
+                                 |
+  <div></div> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present             
+                      |
+                    execution
+                      |
+                     node
+                       |
+                     screen
+
+
+                                compiler db -[Subramanian]
+                                    |
+  <subramanian></subramaian> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              throw error - UnKnown Element
+                      |                                 |
+                     node                              Convert that element into PlanText   
+                       |                               |
+                     screen                           render
+
+
+
+2.IN 2007-2008 W3C Decided to introduce new html spec - html 5
+
+ -custom elements - how to add new elements
+ -custom attributes - how to add custom attribues on existing html specs
+
+Custom Types
+int,float =  class A{ int,float }
+
+how to teach browser to understand custom elements and attributes
+   -via Javascript
+
+
+                             compiler db -[Subramanian]
+                                    |
+ <subramanian></subramaian> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              feed into js 
+                      |                                 |
+                     node                              js will do something   
+                       |                               |
+                     screen                           render
+
+
+
+eg:
+
+class AppDrawer extends HTMLElement {...}
+
+window.customElements.define('app-drawer', AppDrawer);
+
+// Or use an anonymous class if you don't want a named constructor in current scope.
+window.customElements.define('app-drawer', class extends HTMLElement {...});
+
+
+
+  			              compiler db -[div,Subramanian]
+                                           |
+<subramanian></subramaian> --jsengine will add new defintion--- compile----compiler
+                                   |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              throw error - UnKnown Element
+                      |                                 |
+                     node                              Convert that element into PlanText   
+                       |                               |
+                     screen                           render
+
+////////////////////////////////////////////////////////////////////////////////////////////
+Angular and Custom Elements:
+
+ Angular follows custom element spec in order to create apps.
+
+
+  Custom Element
+  <app-root></app-root>
+                  |
+                  ------------->|import { Component } from '@angular/core';
+
+				@Component({
+ 				 selector: 'app-root',
+  				templateUrl: './app.component.html',
+  				styleUrls: ['./app.component.css']
+				})
+				export class AppComponent {
+					  title = 'ng-helloworld';
+				}
+
+
+<app-root></app-root> ---------------function AppComponent(){ 
+                                           //dom code
+                                     }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Modules
+
+code organization.
+
+Physcial code -  es 6 modules - export,import
+
+organization  ,folders, and files
+
+src
+ services
+   order.service.ts
+
+code organization 
+ logical organzation.
+Object organization- runtime.
+modules are logical representation which organzies other objects
+
+
+Angular application organization into modules(container)
+
+Types of containers
+
+-main container - main module
+-sub container - sub modules
+
+Every angular must have one single main module /app module
+
+Types of modules:
+
+1.Built in modules : angular provides lot of submodules
+2.Programmer defined modules -  ordermodules,customermodule,productmodules
+
+
+-main container - main module
+
+Every thing is object?
+
+
+How objects are created?
+
+ out of classes
+
+you need class.
+
+@NgModule()
+class AppModule {}
+
+Who is creating object?
+
+Angular framework injector system.
+
+ let module = new AppModule();
+
+
+Infra objects and decoarators
+
+
+module    ---- @NgModule
+component -----@Component
+Directive ----@Directive
+Pipe     ----- @Pipe
+Servie  -------@Injectable
+
+@NgModule()
+export class AppModule {}
+
+@Comoponent()
+export class AppComponent {}
+
+
+@Injectable()
+export class OrderService {}
+
+
+@Pipe()
+export class SortPipe {}
+
+
+@Directive()
+export class SortPipe {}
+
+
+
+
+
+
