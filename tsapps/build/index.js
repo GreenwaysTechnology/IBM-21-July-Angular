@@ -1,8 +1,8 @@
-//string
-var firstName = "Subramanian";
-//number
-var age = 41;
-//boolean
-var isValid = true;
-//if you reinitalize the variable
-//firstName =100;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var order_service_1 = require("./services/order.service");
+function main() {
+    var orderService = new order_service_1.OrderService();
+    console.log(orderService.findAll());
+}
+main();
