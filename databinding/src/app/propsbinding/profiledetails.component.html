@@ -1,0 +1,11 @@
+<div>
+    <div class="card"  *ngFor="let profile of profiles">
+        <span class="badge bg-secondary">{{profile.id}}</span>
+        <div class="card-body" style="background-color: aquamarine; margin-bottom: 5px;">
+            <p>Name : {{profile.name}}</p>
+            <p>Email :{{profile.email}}</p>
+        </div>
+        <app-profileaddress [address]="profile.address" ></app-profileaddress>
+        <app-profilecompany [company]="profile.company" ></app-profilecompany>
+    </div>
+</div>

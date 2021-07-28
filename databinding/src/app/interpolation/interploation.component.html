@@ -1,0 +1,12 @@
+<h2>InterPolation</h2>
+<h3>String(Name) :  {{name}}</h3>
+<h3>Number(Salary) :  {{salary}}</h3>
+<h3>Boolean(Valid) :  {{isValid ? "Valid" : "Invalid"}}</h3>
+<h3>Object {{address.city}} {{address.doorno}}</h3>
+<h3>Array</h3>
+<p>Skill List</p>
+<ul>
+    <li *ngFor="let skill of skills" >
+        <span>{{skill}}</span>
+    </li>
+</ul>

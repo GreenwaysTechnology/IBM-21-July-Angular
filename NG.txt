@@ -740,6 +740,316 @@ CREATE src/app/header/header.component.html (21 bytes)
 CREATE src/app/header/header.component.ts (251 bytes)
 UPDATE src/app/header/header.module.ts (307 bytes)
 
+...........................................................................................
+					Dyanamic Userinterface
+					Data binding
+............................................................................................
+
+
+Data binding:
+ Transfering state to ui(view)
+
+Types of databinding
+
+1.interpolation
+2.property binding
+3.attribute binding
+4.event binding
+5.two way data binding
+6.class binding
+7.style binding
+
+
+1.interpolation:
+
+MVC design pattern
+
+Angular implements MVC design pattern.
+
+M -Model data
+V - View - Component Template
+C - Controller - Component
+
+COntroller transfer data to View.
+
+Model- primitives,objects, arrays
+
+src/app/interpolation/interpolation.component.ts
+import { Component, OnInit } from '@angular/core';
+import { Address } from '../types/address.type';
+
+@Component({
+  selector: 'app-interploation',
+  templateUrl: './interploation.component.html',
+  styles: [
+  ]
+})
+export class InterploationComponent implements OnInit {
+
+  //state/model/data
+  name: string = "Subramanian Murugan"
+  salary: number = 10000
+  isValid: boolean = true;
+
+  //object
+  address: Address = {
+    doorno: 10,
+    city: 'Coimbatore'
+  }
+
+  //array
+  skills: Array<string> = ["Angular", "Typescript", "Javascript", "MicroServices"];
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+src/app/interpolation/interpolation.component.html
+<h2>InterPolation</h2>
+<h3>String(Name) :  {{name}}</h3>
+<h3>Number(Salary) :  {{salary}}</h3>
+<h3>Boolean(Valid) :  {{isValid ? "Valid" : "Invalid"}}</h3>
+<h3>Object {{address.city}} {{address.doorno}}</h3>
+<h3>Array</h3>
+<p>Skill List</p>
+<ul>
+    <li *ngFor="let skill of skills" >
+        <span>{{skill}}</span>
+    </li>
+</ul>
+............................................................................................
+                                Property Binding
+............................................................................................
+
+
+Property:[]
+
+
+<img src="imglocation" />
+
+What is src?
+ src is attribute / property
+
+attribute and property are synonmous
+
+In Angular 
+attribute means "property of html built in elements"
+
+<img src="imglocation" />
+   src is attribute
+
+property means  "property of custom elements"
+
+<app-greeter [message]="Hello"  >
+
+message is property
+............................................................................................
+
+    "Where ever you use [], you can understand that the element can have dynamic values"
+
+	  To the Component you can pass value via attribute/property dynamically
+
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-attributebinding',
+  templateUrl: './attributebinding.component.html',
+  styles: [
+  ]
+})
+export class AttributebindingComponent implements OnInit {
+
+  //img location
+  imgLocation: string = "favicon.ico";
+  isEnabled:boolean = true;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+<h2>Attribute Binding</h2>
+<h2>Static Attribute</h2>
+<img src="favicon.ico"/>
+<h2>Dynamic Attribute - []</h2>
+<img [src]="imgLocation"/>
+<div>
+    <button [disabled]="isEnabled">Show Me</button>
+</div>
+...........................................................................................
+
+Property Binding:
+
+ passing data to custom elements/to component via property
+
+
+property value can be any type - string,number,object,array
+
+property value can be hardcoded or can be passed via variable
+
+<app-greeter [message]="'Hello'" ></app-greeter> - hardcoded string value
+
+<app-greeter [message]="variable" ></app-greeter> - hardcoded string value
+
+
+Component and Property driven design :
+
+  "As much as possible , we have to break the component and pass data"
+
+.............................................................................................
+
+Complex Binding : refere code:
+.............................................................................................
+					Styling
+............................................................................................
+
+CSS :
+
+1.Global css
+
+2.third party css
+ bootstrap
+npm install bootstrap --save
+
+angular.json
+    "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css"
+            ],
+
+3.inside component
+  styles: []  -component specific styles
+   -inline
+   -external
+............................................................................................
+					Event Binding
+.............................................................................................
+	
+
+EventTarget Object: Event
+  It connects dom object and listner method.
+  where listener method can read values and other proproperties of dom object.
+
+btn.addEventListener = function(evt){
+  evt.target   
+
+}
+$event  - is global variable from the angular which has reference of EventTarget object
+
+
+Two way binding:
+
+-data is transfered from view to controller and controller to view 
+
+How to implement two way data binding
+
+1.events
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Interaction with UI: Event Binding: ()
+
+DOM events:
+
+<button (click)="listner" >Click</button>
+
+EventTarget Object:
+  It connects dom object and listner method.
+  where listener method can read values and other proproperties of dom object.
+
+btn.addEventListener = function(evt){
+   
+
+}
+$event  - is global variable from the angular which has reference of EventTarget object
+
+
+Two way data binding:
+when ever data is transfered from the ui , controller is notified, whenever controller updates the data,ui is notified
+
+Two way data binding is achvied via 
+
+ $event ----instance variable
+
+.............................................................................................
+
+<div>
+    <h2>Click Event</h2>
+    <button (click)="onClick()">Click</button>
+</div>
+<div>
+    <h2>Input Event</h2>
+    <div>
+        <h3>With Listener</h3>
+        <h3>{{inputMessage}}</h3>
+        <input (input)="onRead($event)">
+    </div>
+    <div>
+        <h3>Without Listener</h3>
+        <h3>{{messageOne}}</h3>
+        <input (input)="messageOne=$event.target.value">
+    </div>
+
+    <div>
+        <h3>Property Binding + Event Binding </h3>
+        <h3>{{messageTwo}}</h3>
+        <input  [value]="messageTwo" (input)="messageTwo=$event.target.value">
+    </div>
+    <div>
+        <h3>Property Binding + Event Binding = Banana Box Notation [()] </h3>
+        <h3>{{messageThree}}</h3>
+        <input [(ngModel)]="messageThree">
+    </div>
+
+</div>
+
+............................................................................................
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-dom-event-binding',
+  templateUrl: './dom-event-binding.component.html',
+  styles: [
+  ]
+})
+export class DomEventBindingComponent implements OnInit {
+
+  inputMessage: string = "..."
+
+  messageOne:string="....";
+
+  messageTwo:string="....";
+
+  messageThree:string="....";
+
+  constructor() { }
+
+  onClick() {
+    alert('Button was clicked')
+  }
+  onRead(evt: any) {
+    //  console.log(evt.target.value)
+    this.inputMessage = evt.target.value
+  }
+  ngOnInit(): void {
+  }
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 
 
 
