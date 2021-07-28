@@ -319,6 +319,434 @@ export class SortPipe {}
 
 @Directive()
 export class SortPipe {}
+..............................................................................................
+
+Exploring App Component:
+
+Angular Built in decorators
+
+
+Angular supports lot of built in decorators.
+
+ Component ContentChild ContentChildren Directive Host HostBinding HostListener Inject Injectable Input NgModule Optional Output Pipe Self SkipSelf ViewChild ViewChildren
+
+
+@Component Decorators is core decorator used to create component object.
+@Component decorator is child decorator of @Directive.
+
+Component decorator takes parameter which is called "Meta Object".
+
+@Component({})
+
+
+app.component.ts
+import { Component } from "@angular/core";
+
+
+
+@Component({
+  selector: 'app-root', // custom element,
+  //template : inline : part of component declaration
+  // template : `
+  //     <h1>Welcome to Angualr</h1>   
+  // `
+  templateUrl: 'app.component.html'
+  
+})
+export class AppComponent { }
+............................................................................................
+
+//
+object creations
+
+ let app = new AppComponent()
+
+in angular we dont create infra objects- angular create automatically.
+
+   injector system.
+
+
+how to tell angular to create objects.
+
+Angular never creates objects until you tell -  you configure.
+
+Angular creates infra objects only. via decorator.
+
+Even though angular uses infra objects, never creates them until you tell.
+
+Where you can tell?
+
+ inside another object called "Module" - AppModule.
+
+
+1.DI INFO : object creation information
+
+Infra objects can be classified into three category:
+......................................................
+
+1.1.view Objects
+ components,directives,pipes
+ declarations:[]
+  declarations: [AppComponent], // view objects - component,pipe,directives
+
+1.2.module objects-submodules
+  imports: [BrowserModule], //all sub modules
+
+1.3.services/providers
+  providers: []
+
+
+Where you can tell?
+
+ inside another object called "Module" - AppModule.
+
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Coding Best practice:
+
+<app-root> 
+  ? - ?
+tag name:
+Do use dashed-case or kebab-case for naming the element selectors of components.
+
+can i use different name
+
+<ibm-root>
+  yes
+before you use, we need to configure it in angular.json files
+
+"prefix": "ibm"
+
+file names:
+
+domainname.component/service/directive/pipe/module /.spec.ts/html/css
+
+hero.component.ts|html|css|spec
+hero.service.ts
+hero.directive.ts
+hero.pipe.ts
+
+hero.component.ts
+hero.component.css
+hero.component.html
+
+app.component.ts
+app.component.html
+app.component.css
+app.component.spec.ts - unit testing file
+
+
+class Names
+
+-Do use upper camel case for class names.  - Order
+-Do match the name of the symbol to the name of the file.
+-Do append the symbol name with the conventional suffix x (such as Component, Directive, Module, Pipe, or Service) for a thing of that type.
+   CustomerComponent, CustomerService, CustomerDirective CustomerPipe ..
+
+Do give the filename the conventional suffix (such as .component.ts, .directive.ts, .module.ts, .pipe.ts, or .service.ts) for a file of that type.
+
+   customer.component.ts    ----export class CustomerComponent { }
+   customer.module.ts        ----export class CustomerModule {}
+   customer.pipe.ts          -----export class CustomerPipe {}
+   etc...
+.............................................................................................
+
+modularaization:
+
+1.break app into files and folders
+
+app - main folder -  only root files - module,component
+ |
+ greeter
+ customer
+ product
+ utils
+ services
+ directives
+ pipes
+
+Component driven arch:
+
+ as much as possible we have break component ; 
+
+
+Angular dev tool
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+How to create a component and use it?
+
+
+HTML View
+<body>
+  <app-root>
+	 <app-hello></app-hello>
+	 <app-hai></app-hai>
+  </app-root>
+</body>
+
+app/greeter/hello.component.ts
+import { Component } from "@angular/core";
+
+
+@Component({
+    selector:'app-hai',
+    templateUrl: 'hai.component.html'
+})
+export class HaiComponent{
+
+}
+
+app/greeter/hello.component.html
+<h1>Hello Component</h1>
+
+
+app/greeter/hai.component.html
+<h1>Hai Component</h1>
+
+app/greeter/hai.component.ts
+import { Component } from "@angular/core";
+
+
+@Component({
+    selector:'app-hai',
+    templateUrl: 'hai.component.html'
+})
+export class HaiComponent{
+
+}
+
+app.module.ts
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppComponent } from "./app.component";
+import { HaiComponent } from "./greeter/hai.component";
+import { HelloComponent } from "./greeter/hello.component";
+
+
+
+@NgModule({
+  declarations: [AppComponent,HelloComponent,HaiComponent],  //View Objects
+  imports: [BrowserModule],  //All SubModule
+  providers: [],   //Services,
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+app.component.html
+<h1>Welcome to Angular !!!</h1>
+<app-hello></app-hello>
+<app-hai></app-hai>
+
+....................................................................................
+
+<body>
+  <app-root>
+         <app-greeter>
+		 <app-hello></app-hello>
+		 <app-hai></app-hai>
+  	 </app-greeter>
+  </app-root>
+</body>
+
+app/greeter/greeter.component.ts
+import { Component } from "@angular/core";
+
+
+
+@Component({
+    selector: 'app-greeter',
+    templateUrl:'greeter.component.html'
+})
+export class GreeterComponent{
+
+}
+app/greeter/greeter.component.html
+<app-hello></app-hello>
+<app-hai></app-hai>
+
+
+app.component.html
+<h1>Welcome to Angular !!!</h1>
+<app-greeter></app-greeter>
+
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppComponent } from "./app.component";
+import { GreeterComponent } from "./greeter/greeter.component";
+import { HaiComponent } from "./greeter/hai.component";
+import { HelloComponent } from "./greeter/hello.component";
+
+
+
+@NgModule({
+  declarations: [AppComponent,HelloComponent,HaiComponent,GreeterComponent],  //View Objects
+  imports: [BrowserModule],  //All SubModule
+  providers: [],   //Services,
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular Dev Tool:
+
+ To visuize the component arch in browser
+
+..........................................................................................
+
+Modularity:
+
+->Phsyical modularity -  files and folders 
+  sharing coding via export and import.
+->Logical Modularity
+  Organzation of objects(comp,services...).
+
+SubModule:
+ It is container object we need to organize objects.
+ 
+
+app/greeter.module.ts
+import { NgModule } from "@angular/core";
+import { GreeterComponent } from "./greeter.component";
+import { HaiComponent } from "./hai.component";
+import { HelloComponent } from "./hello.component";
+
+
+
+@NgModule({
+    declarations:[GreeterComponent,HelloComponent,HaiComponent],
+    imports:[],
+    providers:[]
+})
+export class GreeterModule {}
+
+
+app.module.ts
+
+import { GreeterModule } from "./greeter/greeter.module";
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule,GreeterModule],  //All SubModules
+  providers: [],   //Services,
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+After that you can see error
+
+
+rror: src/app/app.component.html:4:1 - error NG8001: 'app-greeter' is not a known element:     1. If 'app-greeter' is an Angular component, then verify that it is part of this module.       2. If 'app-greeter' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.                                                                                                                                                                                                                4 <app-greeter></app-greeter>                                                                                         
+
+Module Scope:
+Any Component,Pipe,Directive,submodule refers inside a module will be available inside that module only. Module Scope
+
+
+Module Scope:
+
+1.public scope
+   if any objects belong to all modules that  is public
+2.private scope
+  if any objects belong to that module is private including appmodule.
+
+if you want to make any object in public scope, you need to configer it
+exports: 
+
+
+@NgModule({
+    declarations: [GreeterComponent, HelloComponent, HaiComponent,WeclomeComponent],
+    imports: [],
+    providers: [],
+    exports:[GreeterComponent]
+})
+export class GreeterModule {
+
+}
+
+import { NgModule } from "@angular/core";
+import { GreeterComponent } from "./greeter.component";
+import { HaiComponent } from "./hai.component";
+import { HelloComponent } from "./hello.component";
+
+
+
+@NgModule({
+    declarations:[GreeterComponent,HelloComponent,HaiComponent],
+    imports:[],
+    providers:[],
+    exports:[GreeterComponent]
+})
+export class GreeterModule {}
+............................................................................................
+
+Problems in the dev flow:
+
+Tasks:
+
+1.create folder
+2.create files - component-ts,html,css,spec
+3.create module
+4.declare class -cmp,service...
+5.refer the classes inside module
+6.you need to inject submodule into main module..
+
+if you repeate the same thing for every object , which increases lot of time.
+
+Automation:
+ code generation automation
+
+angular cli tool to generate code.
+
+
+//create folder, create module, inject this module into app module
+helloworld>ng g m header --module=app
+CREATE src/app/header/header.module.ts (192 bytes)
+UPDATE src/app/app.module.ts (756 bytes)  
+
+
+create component, inside header folder, inject into header module, make it available public
+i dont want css file,i want html file,i dontwant spec file
+
+ng g c header/header  --flat=true --export=true --inline-style=true --skip-tests=true   --module=header
+
+
+ --flat=true :  create any thing inside exsiting folder
+ --export=true : make it public
+ --inline-style=true : i dont want css file
+ --skip-tests=true  :dont create spec files
+ --module=header  : inject inside header module
+
+
+>ng g c header/header --flat=true --export=true --inline-style=true --skip-tests=true --module=header
+CREATE src/app/header/header.component.html (21 bytes)
+CREATE src/app/header/header.component.ts (251 bytes)
+UPDATE src/app/header/header.module.ts (307 bytes)
+
+
+
+
+
+
+
+
 
 
 

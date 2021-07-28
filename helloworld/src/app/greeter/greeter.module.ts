@@ -1,0 +1,12 @@
+import { NgModule } from "@angular/core";
+import { GreeterComponent } from "./greeter.component";
+import { HaiComponent } from "./hai.component";
+import { HelloComponent } from "./hello.component";
+
+@NgModule({
+    declarations:[GreeterComponent,HelloComponent,HaiComponent],
+    imports:[],
+    providers:[],
+    exports:[GreeterComponent]
+})
+export class GreeterModule {}
