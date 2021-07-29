@@ -1,0 +1,12 @@
+<h2>Pipes</h2>
+<h2>Date Pipe</h2>
+{{today | date}}
+{{today | date:'dd/MM/yyyy'}}
+<p>The time is {{today | date:'h:mm a z'}}</p>
+<h2>String Pipes</h2>
+<p>name {{name | uppercase}} {{name | lowercase}}  {{name | titlecase}}</p>
+<h2>Currency Pipes</h2>
+<p>Stock Price  {{stockValue | currency}} {{stockValue | currency:'INR'}}</p>
+<h2>Custom Pipe: DecimalFractionPipe</h2>
+<p>Stock Value: {{stockValue | decimalFraction}}</p>
+<p>Stock Value: {{stockValue | decimalFraction:3}}</p>

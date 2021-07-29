@@ -6,6 +6,11 @@ import { InterpolationModule } from './interpolation/interpolation.module';
 import { AttributebindingModule } from './attributebinding/attributebinding.module';
 import { PropsbindingModule } from './propsbinding/propsbinding.module';
 import { EventsModule } from './events/events.module';
+import { CustomeventsModule } from './customevents/customevents.module';
+import { PipesModule } from './pipes/pipes.module';
+import { OrdersModule } from './orders/orders.module';
+import { StructuraldirectivesModule } from './structuraldirectives/structuraldirectives.module';
+import { AttributedirectivesModule } from './attributedirectives/attributedirectives.module';
 
 @NgModule({
   declarations: [
@@ -16,7 +21,12 @@ import { EventsModule } from './events/events.module';
     InterpolationModule,
     AttributebindingModule,
     PropsbindingModule,
-    EventsModule
+    EventsModule,
+    CustomeventsModule,
+    PipesModule,
+    OrdersModule,
+    StructuraldirectivesModule,
+    AttributedirectivesModule
   ],
   providers: [],
   bootstrap: [AppComponent]
