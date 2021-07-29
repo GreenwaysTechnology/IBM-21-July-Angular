@@ -1792,13 +1792,550 @@ export class HighlightDirective {
 ..............................................................................................
 				  Services
 .............................................................................................
+Service is object going to hold biz logic and data.
+
+In Mvc , service is acting as bridge between UI and back end
+
+
+ View --------------Controller---------Service-----backend
+
+ View-----------------Component---------Service-----Backend.
+
+
+Types of services 
+
+1.global/shared  services:
+  Services are used by many components.
+eg: Logger,Utility
+2.Domain specfic services
+  users
+    usercomponent
+    usersservice
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+Steps:
+
+C:\session\ibm\2021\july\ng-apps\services>ng g m greeter --module=app
+CREATE src/app/greeter/greeter.module.ts (193 bytes)
+UPDATE src/app/app.module.ts (391 bytes)
+
+C:\session\ibm\2021\july\ng-apps\services>ng g c greeter/greeter  --flat=true --export=true --inline-style=true --skip-tests=true   --module=greeter
+CREATE src/app/greeter/greeter.component.html (22 bytes)
+CREATE src/app/greeter/greeter.component.ts (254 bytes)
+UPDATE src/app/greeter/greeter.module.ts (312 bytes)
+
+C:\session\ibm\2021\july\ng-apps\services>ng g c greeter/hello  --flat=true --export=true --inline-style=true --skip-tests=true   --module=greeter
+CREATE src/app/greeter/hello.component.html (20 bytes)
+CREATE src/app/greeter/hello.component.ts (248 bytes)
+UPDATE src/app/greeter/greeter.module.ts (404 bytes)
+
+1.write a service class
+
+import { Injectable } from "@angular/core";
 
 
 
+@Injectable()
+export class HelloService {
+    constructor() { }
+    //apis
+    public sayHello(): string {
+        return 'Hello!!!';
+    }
+}
+
+2.object creations
+import { NgModule } from '@angular/core';
+import { HelloService } from './hello.service';
+
+@NgModule({
+  providers: [HelloService]
+})
+export class GreeterModule { }
 
 
 
+3.write component and inject
+import { Component, OnInit } from '@angular/core';
+import { HelloService } from './hello.service';
 
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent implements OnInit {
+
+  message: string = "";
+  constructor(private helloService: HelloService) {
+    this.message = this.helloService.sayHello();
+  }
+
+  ngOnInit(): void {
+  }
+
+}
+
+Code Refactoring for service creations:
+
+-remove providers configuration in modules.
+
+
+@Injectable({
+    providedIn: GreeterModule
+})
+
+Service objects are created by injectors.
+
+Injector is special program whoes job is to create objects
+
+Types of injectors:
+
+1.Global Injector - Creates objects using global injector  -AppModule
+2.Module Injector - objects are created using module inject when that module is created
+3.Component Injector - objects created using component injector.
+
+1.Global Injector
+
+-creates only one copy of the object- single ton.
+
+
+import { Injectable } from "@angular/core";
+import { GreeterModule } from "./greeter.module";
+
+@Injectable({
+    //providedIn: GreeterModule create HelloService with help of Greeter Module injector
+    providedIn: 'root' //Hello Service is created by global injector
+})
+export class HelloService {
+    constructor() { }
+    //apis
+    public sayHello(): string {
+        return 'Hello!!!';
+    }
+}
+...............................................................................................
+
+Dependency injection and services:
+..................................
+
+In java -spring we have many types of DI
+
+1.Constructor injection
+2.Setter injection
+3.field injection
+
+But angular supports only constructor injections
+You can inject only via constructor args.
+constructor(private helloService: HelloService) { }
+
+Service api call and data initalization:
+.........................................
+
+Can i call inside constructor and initalize the data?
+
+ Yes 
+  message: string = "";
+  constructor(private helloService: HelloService) {
+    this.message = this.helloService.sayHello();
+  }
+
+but it is not recommended. constructors only used for di not for data initalization.
+
+Component Life cycle apis
+...........................
+
+Component Life Cycle Methods: hooks:
+   methods are called by angular runtime when component/directive goes in transistion.
+
+init and destory hook:
+......................
+
+init - called after constructor completes, where you can write resource insentive tasks
+  like api calls,timers,websocket integration.
+
+destory -called once if the component is removed from memory or from component tree
+   -cleanup activities.
+
+init and destroy is represented inside life cyle hooks interfaces
+
+OnInit interface
+ ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+init and destroy is represented inside life cyle hooks interfaces
+
+OnInit interface
+ ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent implements OnInit {
+  //domain data
+  message: string = "default";
+
+  constructor(private helloService: HelloService) {
+    //this.message = this.helloService.sayHello();
+    // this.helloService.sayHello(response => {
+    //   this.message = response
+    // });
+  }
+  ngOnInit(): void {
+    this.helloService.sayHello(response => {
+      this.message = response
+    });
+  }
+
+}
+
+Refactoring without implementing interface itself, angular will take care of that.
+
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent {
+  //domain data
+  message: string = "default";
+
+  constructor(private helloService: HelloService) {
+    //this.message = this.helloService.sayHello();
+    // this.helloService.sayHello(response => {
+    //   this.message = response
+    // });
+  }
+  ngOnInit(): void {
+    this.helloService.sayHello(response => {
+      this.message = response
+    });
+  }
+  ngOnDestroy(){
+      //cleanup logic
+  }
+
+}
+...........................................................................................
+
+How to get Profiles data from service : mock data:
+...................................................
+
+
+import { Injectable } from "@angular/core";
+import { PROFILES } from "../mock-data/profiles";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ProfileService {
+    constructor() {
+
+    }
+    public findAll(): Array<any> {
+        return PROFILES;
+    }
+}
+import { Component, OnInit } from '@angular/core';
+import { ProfileService } from './profile.service';
+
+@Component({
+  selector: 'app-profiles',
+  templateUrl: './profiles.component.html',
+  styles: [
+  ]
+})
+export class ProfilesComponent implements OnInit {
+
+  profiles!: Array<any>
+
+  constructor(private profileService: ProfileService) { }
+
+  ngOnInit(): void {
+    this.profiles = this.profileService.findAll();
+  }
+
+}
+<h2>Profile Details</h2>
+<div>
+    <div class="card"  *ngFor="let profile of profiles">
+        <span class="badge bg-secondary">{{profile.id}}</span>
+        <div class="card-body" style="background-color: aquamarine; margin-bottom: 5px;">
+            <p>Name : {{profile.name}}</p>
+            <p>Email :{{profile.email}}</p>
+        </div>
+        
+    </div>
+</div>
+.............................................................................................
+				Async Programming and implementation
+				     (Async Services)
+
+
+What is async and non blocking?
+
+It is programming model where the main program(caller) program wont be blocked/wait for data from the callee.
+
+ Caller(A) --------------------Callee(B)
+ ComponentA--------------------Service
+
+if there is dealy from callee /service, during that time caller will wait- sync/blocking programming.
+
+if caller is going to continue its job, without waiting for data. when ever data is ready from callee side, caller will activate the function(callback) to read data
+
+
+How to implement non blocking/async programming in js(angular)
+
+1.callback pattern
+2.Promises
+3.async...await
+
+5.Rxjs
+  -Async + Streaming
+
+Delay response:
+Using timer.
+
+import { Injectable } from "@angular/core";
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HaiService {
+    constructor() { }
+    //async service: using callbacks
+    public sayHai(action: Function): void {
+        //timer api to simulate delay
+        setTimeout(action, 5000, "Hai,I am Delayed")
+    }
+}
+import { Component, OnInit } from '@angular/core';
+import { HaiService } from './hai.service';
+
+@Component({
+  selector: 'app-hai',
+  templateUrl: './hai.component.html',
+  styles: [
+  ]
+})
+export class HaiComponent implements OnInit {
+
+  message!: string;
+  loading: boolean = false;
+  status: string = "loading....."
+  constructor(private haiService: HaiService) { }
+
+  ngOnInit(): void {
+    //initalize the message after 5ms 
+    this.haiService.sayHai((message: string) => {
+      this.message = message;
+      this.loading = !this.loading;
+    })
+  }
+
+}
+<div *ngIf="loading; else notLoading  ">
+    <h1>Message From {{message}}</h1>
+</div>
+<ng-template #notLoading>
+    <div>
+        <h2>{{status}}</h2>
+    </div>
+</ng-template>
+.............................................................................................
+
+Promises:
+ -Promise is a wrapper to the callback pattern.
+
+import { Injectable } from "@angular/core";
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HaiService {
+    constructor() { }
+     //async servie :using Promises
+    public sayHai(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 5000, "Hai,I am Delayed")
+        })
+    }
+}
+<div *ngIf="loading; else notLoading  ">
+    <h1>Message From {{message}}</h1>
+</div>
+<ng-template #notLoading>
+    <div>
+        <h2>{{status}}</h2>
+    </div>
+</ng-template>
+
+............................................................................................
+
+async ..await are keywords to remove then and catch blocks in the caller side.
+
+import { Component, OnInit } from '@angular/core';
+import { HaiService } from './hai.service';
+
+@Component({
+  selector: 'app-hai',
+  templateUrl: './hai.component.html',
+  styles: [
+  ]
+})
+export class HaiComponent implements OnInit {
+
+  message!: string;
+  loading: boolean = false;
+  status: string = "loading....."
+  constructor(private haiService: HaiService) { }
+
+  async ngOnInit() {
+    try {
+      this.message = await this.haiService.sayHai();
+      this.loading = !this.loading;
+    }
+    catch (err) {
+
+    }
+
+  }
+
+}
+import { Injectable } from "@angular/core";
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HaiService {
+    constructor() { }
+    //async servie :using Promises
+    public sayHai(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 5000, "Hai,I am Delayed")
+        })
+    }
+}
+...............................................................................................			Async Programming using Reactive Programming
+.............................................................................................
+			
+What is Reactive Programming?
+
+Programming model/style which foucus declarative async,data streaming model.
+
+
+declarative programming:
+
+i want to write code to filter data from array.
+
+
+Imperative Programming:
+.......................
+
+list=['data1','data2',.....]
+
+for(var i=0;i<list.length;i++){
+
+   var filteredData=[]   
+    if(list[i]==='data1'){
+    
+      filtereddata.push(list[i))
+   }
+}
+return filterdData
+
+
+declarative ; focus only application logic
+
+list.filter(item=>item==='data1')=>returns filtereddata
+
+
+async:
+  during data processing like filter,map , you should not block the current thread.
+ 
+
+data Streaming:
+  
+  data is not sent to the caller in one go, rahter one by one..
+..............................................................................................
+
+Reactive Programming uses three design pattern
+
+-Observable Design pattern
+   -Enables streaming programming
+There are two actors
+  -Publisher  -- who starts streaming data
+	-Service is Publisher
+  -Consumer/Subscriber -- who listens for data
+	-Component is Consumer
+
+
+As of now how data is returned from service to component
+
+Callback -
+ Service will emit data in short,once the timeout is finished
+  -fire and forget model
+Promises
+   Service will emit data in short,once the timeout is finished
+  -fire and forget model
+
+Reactive
+   Service will emit data using streaming model
+   -listen and retry model.
+
+Observable  pattern is used to implement event driven programming.
+
+Publisher push data to Subscriber based on events.
+
+Observable uses functional style programming model to enable declarative data processing
+ Operators are methods used to processing on going stream of data.
+
+............................................................................................
+
+Reactive Programming is not language dependant - language,framework,lib independant.
+
+Javascript and Reactive Programming:
+
+rxjs -js implementation.
+..............................................................................................
+Rxjs and angular:
+
+angular internally uses rxjs for data streaming.
+
+Many internally apis of angular uses rxjs apis
+
+-EventEmitter -  rxjs implementation
+-Http api uses rxjs
+-router api uses rxjs.
+......................................................................................
+
+Objects in Rxjs:
+
+1.Observable - Publisher
+2.Observer - Subscriber
+3.Subject - Special Publisher
+4.Schduler- for thread management
+
+Operators:
+ functions used to data processing.
+
+Reactive programming need not be async, can be sync programming.
+
+Reactive Programming = >Streaming is only core principle 
 
 
 

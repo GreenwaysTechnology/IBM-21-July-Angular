@@ -1,0 +1,8 @@
+<div *ngIf="loading; else notLoading  ">
+    <h1>Message From {{message}}</h1>
+</div>
+<ng-template #notLoading>
+    <div>
+        <h2>{{status}}</h2>
+    </div>
+</ng-template>
