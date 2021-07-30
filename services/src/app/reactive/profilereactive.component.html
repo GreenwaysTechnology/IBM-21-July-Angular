@@ -1,0 +1,6 @@
+<h1>Profiles</h1>
+<ul>
+    <li *ngFor="let profile of profiles | async">
+        <span>{{profile.id}} {{profile.email}}</span>
+    </li>
+</ul>

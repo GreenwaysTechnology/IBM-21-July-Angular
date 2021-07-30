@@ -2339,16 +2339,918 @@ Reactive Programming = >Streaming is only core principle
 
 
 
+   //return of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        // const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        // return from(array);
+        return range(1, 1000).pipe(
+            tap(() => console.log('called')),
+            map(item => {
+                console.log(`map is called for ${item}`)
+                return item * 2
+            }),
+            //take(20),
+            delay(1000),
+            filter(item => item > 20)
+        );
 
 
 
+  ngOnInit(): void {
+    this.numberService.getNumbers()
+      .subscribe(data => {
+        console.log('subscribe is called for ', data)
+        //  this.data = data
+        this.data.push(data);
+      }, err => {
+        console.log(err);
+      }, () => console.log('done'));
+
+
+<!-- <ul>
+    <li *ngFor="let i of data | async">
+        {{i}}
+    </li>
+</ul> -->
+<ul>
+    <li *ngFor="let i of data">
+        {{i}}
+    </li> 
+</ul>
+
+..............................................................................................
+
+Reactive programming and profile Services:
+
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ProfileService } from '../profiles/profile.service';
+
+@Component({
+  selector: 'app-profilereactive',
+  templateUrl: './profilereactive.component.html',
+  styles: [
+  ]
+})
+export class ProfilereactiveComponent implements OnInit {
+
+  profiles!: Observable<Array<any>>;
+
+  constructor(private profileService: ProfileService) { }
+
+  ngOnInit(): void {
+    this.profiles = this.profileService.getProfileStream();
+  }
+
+}
+	
+import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
+import { delay } from "rxjs/operators";
+import { PROFILES } from "../mock-data/profiles";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ProfileService {
+    constructor() {
+
+    }
+    public findAll(): Array<any> {
+        return PROFILES;
+    }
+
+    public getProfileStream(): Observable<Array<any>> {
+        return of(PROFILES).pipe(delay(5000));
+    }
+}
+<h1>Profiles</h1>
+<ul>
+    <li *ngFor="let profile of profiles | async">
+        <span>{{profile.id}} {{profile.email}}</span>
+    </li>
+</ul>
+............................................................................................
+					HTTP Programming
+...........................................................................................
+
+
+in order to make http calls with rest api servers,js offers an object called "XMLHTTPRequest"
+
+But frameworks provide abstraction over XHR object.
+
+Angular provides XHR Abstraction - @angular/common/http
+
+Angular XHR is powered with Reactive -  XHR + REACTIVE - XHR +Streaming
+
+
+HTTP MOdule:
+
+common/http :
+
+HttpClientModule :
+  This is moudle having all http related apis
+
+This HttpClientModule must be injected before interacting with http end points
+
+HttpClientModule is injected into shared module in general
+
+
+Steps:
+ng g m httpprogramming --module=app
+
+
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 
 
+@NgModule({
+  declarations: [],
+  imports: [
+    CommonModule
+  ]
+})
+export class HttpprogrammingModule { }
 
 
 
+inject httpclientmodule
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http'
 
+
+@NgModule({
+  declarations: [],
+  imports: [
+    CommonModule, HttpClientModule
+  ]
+})
+export class HttpprogrammingModule { }
+
+
+HttpClient:
+..........
+
+Performs HTTP requests. This service is available as an injectable class, with methods to perform HTTP requests.
+
+methods:
+
+get 
+post
+delete
+put
+trace
+request
+.......
+
+Every http methods wrapped by "Observable",Return type would be Observable
+
+get(url: string, options: { headers?: HttpHeaders | { [header: string]: string | string[]; }; observe?: "body"; params?: HttpParams | { [param: string]: string | string[]; }; reportProgress?: boolean; responseType: "arraybuffer"; withCredentials?: boolean; }): Observable<ArrayBuffer>
+............................................................................................
+
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { Hero } from "../types/hero";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class HeroService {
+
+    constructor(private http: HttpClient) { }
+    findAll(): Observable<Array<Hero>> {
+        //communicate with REST API server and get data , return to component
+        const url = 'http://localhost:3000/heroes';
+        return this.http.get<Hero[]>(url);
+    }
+}
+
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Hero } from '../types/hero';
+import { HeroService } from './hero.service';
+
+@Component({
+  selector: 'app-hero',
+  templateUrl: './hero.component.html',
+  styles: [
+  ]
+})
+export class HeroComponent implements OnInit {
+
+  heroes!: Observable<Array<Hero>>
+  constructor(private heroService: HeroService) { }
+
+  ngOnInit(): void {
+    this.heroes = this.heroService.findAll();
+  }
+
+}
+<h1>HTTP Programming</h1>
+<ul>
+    <li *ngFor="let hero of heroes | async">
+       <span>{{hero.id}} {{hero.name}}</span>
+    </li>
+</ul>
+.............................................................................................
+				Routing
+.............................................................................................
+
+Moving from page to page ; navigation.
+
+
+Routing is implemented in web apps via links - hyper links.
+
+HTML 5 offers hyper links through which we can navigate from one page to another page.
+
+HTML offers an address to which we will be redirected- URL,URI.
+
+Types of navigation
+
+1.static  - html
+2.dynamic  - via server side programs
+
+
+In 2008, html 5 introduced dynamic navigation inside browser via javascript api called history which is object contains apis related for navigation.
+
+	       "This is brith of single page web apps"-SPA
+
+
+Types of web apps:
+
+1.Static web app  - 1989--1996
+   hyper links used to navigate 
+http://www.example.com/products.html / product.jpg
+2.Dynamic content Generation Technology 1996 to till date
+  html pages are generated on fly in the server and returns to the client
+ eg: jsp,servlets,asp,php....
+
+ http://www.example.com/prduct.jsp / product.asp/product.php
+
+3.Web Services 2000 to till date
+   Web Services is going to give not html page rather than data in the form of document
+  XML - XML Based webservices- SOAP Based Webservices
+
+  http://www.example.com/product -----> product.xml
+
+  Data portable technology: RESTFull api
+ 
+                                      product.json
+  http://www.example.com/product ----|
+                                      product.xml
+
+4.Single Web App.
+    View layer isloation from the server apps.
+ Server should give only data , you can build client apps separatly
+
+ Client Apps - Mobile clients-android,ios
+               browser clients -? - javascript
+
+ SPA Spec says you can build client side apps enterily in js , you can controll navigation.
+ populating pages....
+
+Spa url patterns: hashbang url pattern
+
+http://www.mydomain.com/index.html#contactus
+http://www.mydomain.com/index.html#products
+http://www.mydomain.com/index.html#profiles
+
+spa simple syntax : here landing page and # symbol not req.which is implict.
+http://www.mydomain.com/profiles
+
+.....................................................................................
+
+Router Objects:
+...............
+
+1.RouterModule
+
+Adds directives and providers for in-app navigation among views defined in an application. Use the Angular Router service to declaratively specify application states and manage state transitions.
+
+class RouterModule {
+  static forRoot(routes: Route[], config?: ExtraOptions): ModuleWithProviders<RouterModule>
+  static forChild(routes: Route[]): ModuleWithProviders<RouterModule>
+}
+
+This moudle must be injected into main moudle / any submodule where ever you want to activate routing.
+
+Types of Routing Modules:
+
+ Routing module is similar module like greetermodule,productmodule,usermodules....
+Routing moudle which contains routing rules.
+
+1.Global Routing Module
+   -Master menu configuration
+2.Features Routing Module
+   mobiles feature
+   tv
+   customers
+   payments
+
+1.Global Routing Module
+  app-routing.module.ts
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+..............................................................................................
+  
+Routing Objects:
+
+1.RoutingModule
+  Module Object
+2.Routes 
+  Type to define routes
+3.RouterOutlet
+  PlaceHolder component
+4.RouterLink
+   Attribute Directive to enable hyperlinks
+
+5.ActivatedRoute
+  Provides access to information about a route associated with a component that is loaded in an outlet
+...................................................................................
+  
+Path Configuration:
+
+-named configuration  -'contactus'
+-empty path  - '' - home
+-redirects - '/someurl'
+-page not found - '**'
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+					Dynamic routing
+////////////////////////////////////////////////////////////////////////////////////////////
+
+/users/1 /users/2
+
+'users/:id
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+                                 Navigation patterns
+
+1. via hyper links - <a routerLink="/foo">
+2. via coding  - Router
+
+class Router {
+  constructor(rootComponentType: Type<any>, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Route[])
+  events: Observable<Event>
+  routerState: RouterState
+  errorHandler: ErrorHandler
+  malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree
+  navigated: boolean
+  urlHandlingStrategy: UrlHandlingStrategy
+  routeReuseStrategy: RouteReuseStrategy
+  onSameUrlNavigation: 'reload' | 'ignore'
+  paramsInheritanceStrategy: 'emptyOnly' | 'always'
+  urlUpdateStrategy: 'deferred' | 'eager'
+  relativeLinkResolution: 'legacy' | 'corrected'
+  config: Routes
+  url: string
+  initialNavigation(): void
+  setUpLocationChangeListener(): void
+  getCurrentNavigation(): Navigation | null
+  resetConfig(config: Route[]): void
+  dispose(): void
+  createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree
+  navigateByUrl(url: string | UrlTree, extras: NavigationBehaviorOptions = {...}): Promise<boolean>
+  navigate(commands: any[], extras: NavigationExtras = { skipLocationChange: false }): Promise<boolean>
+  serializeUrl(url: UrlTree): string
+  parseUrl(url: string): UrlTree
+  isActive(url: string | UrlTree, exact: boolean): boolean
+}
+
+-navigate method is used to move from one page to another with help of coding
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Modularized Routing:
+
+Dashboard:
+
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
+import { DashboardComponent } from "./dashboard.component";
+
+const dashboardRoutes: Routes = [{
+    path: '', component: DashboardComponent
+}];
+
+@NgModule({
+    imports: [RouterModule.forChild(dashboardRoutes)],
+    exports: [RouterModule]
+})
+export class DashboardRoutingModule {
+
+}
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DashboardComponent } from './dashboard.component';
+import { DashboardRoutingModule } from './dashboard.routing.module';
+
+
+
+@NgModule({
+  declarations: [
+    DashboardComponent
+  ],
+  imports: [
+    CommonModule, DashboardRoutingModule
+  ],
+  exports: [
+    DashboardComponent
+  ]
+})
+export class DashboardModule { }
+
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styles: [
+  ]
+})
+export class DashboardComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+dashboard.component.html
+<h1>DashBoard</h1>
+.....................
+
+Connecting DashBoardModule:
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+  }  
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+app.component.html
+<div class="container">
+    <h1>Router App</h1>
+    <nav>
+        <ul>
+             <li>
+                <a routerLink="/dashboard">DashBoard</a>
+            </li>
+        </ul>
+    </nav>
+    <hr>
+    <router-outlet></router-outlet>
+..............................................................................................
+				Forms
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+				 Forms
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Forms are used to get input from the User.
+
+Types of Forms
+
+1.Template driven Forms
+2.Reactive forms
+
+
+Tempate Driven Forms:
+...................
+
+Steps:
+
+1.FormsModule
+
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+2.declare FormModel Object going to hold form field data
+
+export class PostFormModel{
+    constructor(public id: number, public title: string, public author: string){
+    }
+}
+
+3.Create Model Object inside component.
+
+export class AppComponent {
+  post: any;
+  constructor() {
+    this.post = new PostFormModel(Math.random(), 'Learn Angular', 'Misko')
+  }
+}
+
+Step 4 : 
+Create inital form Template
+ -Forms should have bootstrap style
+
+<div class="container">
+  <h1>Post Form</h1>
+  <form>
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" class="form-control" id="title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+
+  </form>
+</div>
+
+
+Step 5:
+
+Data binding
+   Binding textbox(form controls) with Model Object
+   We have many ways
+  1.through instance variable,$event
+  2.through [(ngModel)]="post.title"
+   ngModel = > it is an object from "FormsModule"
+   ngModel it is dto object=>data transfering between view and component.
+
+//
+Form Control value property is bound with name property of input control.
+
+<input [(ngModel)]="post.title" name="title" type="text" class="form-control" id="title" required>
+
+    <form>
+       <!--TODO: Remove this once testing over-->
+       <pre>{{post | json}}</pre>
+      <div class="form-group">
+         <label for="title">Title</label>
+         <input [(ngModel)]="post.title" name="title" type="text" class="form-control" id="title" required>
+       </div>
+       <div class="form-group">
+         <label for="name">Name</label>
+         <input [(ngModel)]="post.author" name="author" type="text" class="form-control" id="name" required>
+       </div>
+   
+       <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+
+*****************************************************************************************
+					Vaildation
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Objects In the FormsModule:
+
+NgForm : 
+
+ It is object representation of "form" element.
+ Can be used to control form validations.
+ in order to access the NgForm object inside template. You have to use template reference
+
+<form #postForm> =>postForm points HTMLForm Object
+
+ngForm is Object which inherits HTMLForm
+
+class ngForm extends HTMLForm{
+  +extra behavior=>Ready made validation code
+  +form submission behviours
+}
+
+What is meaning of this code <form #postForm>?
+
+ HTMLFORMMobject ----postPorm
+
+dummy code for the above template
+ let postForm =  new HTMLForm();
+
+what we need
+ let postForm = new NgForm()
+
+<form #postForm="ngForm"> 
+
+
+The variable postForm is now a reference to the NgForm 
+directive that governs the form as a whole.
+
+The NgForm directive:
+
+What NgForm directive? You didn't add an NgForm directive before.
+
+Angular did. Angular automatically creates and attaches
+ an NgForm directive to the <form> tag.
+
+"The NgForm directive supplements the form element with additional features. 
+
+It holds the controls you created for the elements  with an "ngModel directive" and name attribute, and monitors their properties, including their validity.
+ 
+It also has its own valid property which is true only if every contained control is valid."
+
+Note: NgForm is built Object ,has more logic for simlifying our form handling process.
+
+********************************************************************************************
+********************************************************************************************
+NgModel :
+
+ 1.Transfering data between UI and Controller .
+
+NgModel not only for data transfer, which does so many other things beyond twoway data binding.
+
+Track control(form element) state and validity with ngModel:
+............................................................
+
+Form element states:
+
+Angular provides built-in css classes to tract form control state"
+
+State 	                         Class if true 	  Class if false
+
+The control has been visited.  	  ng-touched 	    ng-untouched
+The control's value has changed.  ng-dirty 	    ng-pristine
+The control's value is valid. 	  ng-valid 	    ng-invalid
+
+State Tracking Steps:
+
+1.Look but don't touch.
+2.Click inside the name box, then click outside it.
+3.Add slashes to the end of the name.
+4.Erase the name.
+
+ng-untouched - if you dont touch
+ng-touched - if you touch
+ng-dirty - if you changed
+ng-invalid - if you remove all-empty field
+
+Step 6:
+
+Add custom CSS for visual feedback:
+
+Valid + Required - green Color
+Valid + optional - white color
+Invalid (required | optional) - red Color
+
+Angular Css:
+
+.ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
+****************************************************************************************
+
+Adding validation block to our code:
+...................................
+
+NgModel is Child Object of FormControl Object
+
+class  Input{
+ 
+}
+class NgModel extends Input{
+  //extra features : state tracking,enabling validation.
+}
+
+<input #Xx> -Here xxPoints only Input
+
+<input #Xx="ngModel"> -Here xx points ngModel
+
+      <input  [(ngModel)]="post.title" #errorMsg1="ngModel" name="title" type="text" class="form-control" id="title" required>
+
+Step 7: Add Error Block
+<div class="container">
+  <h1>Post Form</h1>
+  <form #postForm="ngForm">
+    <!--TODO: Remove this once testing over-->
+    <pre>{{post | json}}</pre>
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input [(ngModel)]="post.title" #errorMsg1="ngModel" name="title" type="text" class="form-control" id="title"
+        required>
+      <div [hidden]="errorMsg1.valid || errorMsg1.pristine" class="alert alert-danger">
+        title is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input [(ngModel)]="post.author" #errorMsg2="ngModel" name="author" type="text" class="form-control" id="name"
+        required>
+      <div [hidden]="errorMsg2.valid || errorMsg2.pristine" class="alert alert-danger">
+        Author is required
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+
+  </form>
+</div>
+
+Step 7: Disabling submit button until the whole form is valid.
+*******************************************************************************************
+
+Disabling submit button in case any validation fails:
+
+  <button type="submit" class="btn btn-success" [disabled]="!postForm.form.valid">Submit</button>
+
+*******************************************************************************************
+
+
+Step 8:Adding combo box: Select Control
+
+
+export class PostFormModel {
+    constructor(public id: number, public title: string, public author: string, public category: string) {
+    }
+}
+export class AppComponent {
+  post: any;
+  //you may get  this from services
+  categories: Array<string> = ["User interface", "MicroServices", "Devops"];
+  constructor() {
+    this.post = new PostFormModel(Math.random(), 'Learn Angular', 'Misko', this.categories[0])
+  }
+}
+
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select class="form-control" id="category" name="category" 
+       [(ngModel)]="post.category">
+        <option *ngFor="let cat of categories"  [value]="cat">
+          {{cat}}
+        </option>
+      </select>
+    </div>
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Step 9: How to submit Form? and show another page
+
+Add listener in the form tag.
+ <form #postForm="ngForm" (ngSubmit)="onSubmit()">
+
+
+<div class="container">
+  <h1>Post Form</h1>
+  <div [hidden]="submitted">
+    <form #postForm="ngForm" (ngSubmit)="onSubmit()">
+      <!--TODO: Remove this once testing over-->
+      <pre>{{post | json}}</pre>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input [(ngModel)]="post.title" #errorMsg1="ngModel" name="title" type="text" class="form-control" id="title"
+          required>
+        <div [hidden]="errorMsg1.valid || errorMsg1.pristine" class="alert alert-danger">
+          title is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input [(ngModel)]="post.author" #errorMsg2="ngModel" name="author" type="text" class="form-control" id="name"
+          required>
+        <div [hidden]="errorMsg2.valid || errorMsg2.pristine" class="alert alert-danger">
+          Author is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select class="form-control" id="category" name="category" [(ngModel)]="post.category">
+          <option *ngFor="let cat of categories" [value]="cat">
+            {{cat}}
+          </option>
+        </select>
+      </div>
+
+
+      <button type="submit" class="btn btn-success" [disabled]="!postForm.form.valid">Submit</button>
+    </form>
+  </div>
+
+  <!--Details Page-->
+  <div class="container" [hidden]="!submitted">
+    <h2>You submitted the following:</h2>
+    <div class="row">
+      <div class="col-xs-3">Id : </div>
+      <div class="col-xs-9  pull-left">{{ post.id }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Title : </div>
+      <div class="col-xs-9  pull-left">{{ post.title }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Author : </div>
+      <div class="col-xs-9 pull-left">{{ post.author }}</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-3">Category : </div>
+      <div class="col-xs-9 pull-left">{{ post.category }}</div>
+    </div>
+    <br>
+    <button class="btn btn-primary" (click)="submitted=false">GoBack</button>
+  </div>
+
+</div>
+
+import { Component } from '@angular/core';
+import { PostFormModel } from './post.form.model';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  post: any;
+  submitted: boolean = false;
+  //you may get  this from services
+  categories: Array<string> = ["User interface", "MicroServices", "Devops"];
+  constructor() {
+    this.post = new PostFormModel(Math.random(), 'Learn Angular', 'Misko', this.categories[0])
+  }
+  onSubmit(){
+     alert(JSON.stringify(this.post))
+     this.submitted = true;
+  }
+}
+
+
+export class PostFormModel {
+    constructor(public id: number, public title: string, public author: string, public category: string) {
+    }
+}
+.............................................................................................
+					Testing
+..............................................................................................
+
+Unit Testing:
+
+-Testing basics
+  -chai.js
+     assertion framework
+  -mocha
+    testing runtime
+
+-jasmine -Assertion
+-karma -Runner
+-TestingBed - for Creating objects and managining depedencies
+
+What you can test
+
+component
+service
+pipe
+directive
+
+
+Basics of Testing :
+
+Test Suit
+
+Test Case
+  biz logic test whether your req and out is match or not.
+
+Test Lifecycle apis
+.............................................................................................
+					PWA
+............................................................................................
 
 
 

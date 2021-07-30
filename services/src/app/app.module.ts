@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { GreeterModule } from './greeter/greeter.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { ReactiveModule } from './reactive/reactive.module';
+import { HttpprogrammingModule } from './httpprogramming/httpprogramming.module';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { ReactiveModule } from './reactive/reactive.module';
     GreeterModule,
     ProfilesModule,
     ReactiveModule,
+    HttpprogrammingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

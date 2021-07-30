@@ -11,19 +11,34 @@ import { NumberStreamService } from './numberstream.service';
 export class NumberstreamComponent implements OnInit {
 
   data: number[] = [];
-  // data!:Observable<Array<number>>
-  //data!:Observable<number>
+  list!: Array<number>
+  listAsync!: Observable<Array<number>>
   constructor(private numberService: NumberStreamService) { }
 
-  ngOnInit(): void {
-    this.numberService.getNumbers()
-      .subscribe(data => {
-        console.log('subscribe is called for ', data)
-        //  this.data = data
-        this.data.push(data);
-      }, err => {
-        console.log(err);
-      }, () => console.log('done'));
+
+  ngOnInit() {
+    this.numberService.getNumbers().subscribe(data => {
+      console.log(data);
+      this.data.push(data);
+    }, err => {
+      console.log(err);
+    }, () => {
+      console.log('done')
+    });
+
+    this.numberService.getArray().subscribe(list => {
+      console.log(list)
+      this.list = list;
+    }, err => {
+      console.log(err);
+    }, () => {
+      console.log('done')
+    });
+
+    this.listAsync = this.numberService.getArray();
+
   }
+
+
 
 }

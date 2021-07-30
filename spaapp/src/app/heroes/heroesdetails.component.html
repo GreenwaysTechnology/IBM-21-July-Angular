@@ -1,0 +1,11 @@
+<!-- <div *ngIf="hero">
+    <h1>{{hero.id}} details</h1>
+</div> -->
+
+<div>
+    <h1>{{hero?.id}} details</h1>
+    <p>{{hero?.name}}</p>
+</div>
+<div>
+    <button (click)="goto()" class="btn btn-success">Heroes Page</button>
+</div>

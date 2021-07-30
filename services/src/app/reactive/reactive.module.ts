@@ -1,18 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NumberstreamComponent } from './numberstream.component';
+import { ProfilereactiveComponent } from './profilereactive.component';
 
 
 
 @NgModule({
   declarations: [
-    NumberstreamComponent
+    NumberstreamComponent,
+    ProfilereactiveComponent
   ],
   imports: [
     CommonModule
   ],
   exports: [
-    NumberstreamComponent
+    NumberstreamComponent,
+    ProfilereactiveComponent
   ]
 })
 export class ReactiveModule { }
